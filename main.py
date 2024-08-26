@@ -156,5 +156,4 @@ app = pn.Column(
     *top_bairros_panes  # Gráficos por bairro
 )
 
-# Servir a aplicação
 app.servable()
