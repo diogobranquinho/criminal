@@ -22,8 +22,11 @@ data_2024 = pd.read_csv(file_path_2024)
 # Concatenar os três DataFrames
 data = pd.concat([data_2022, data_2023, data_2024], ignore_index=True)
 
-# Criar uma nova coluna para o formato MM/YYYY usando MES_ESTATISTICA e ANO_ESTATISTICA
-data['MES_ANO'] = data['MES_ESTATISTICA'].astype(str).str.zfill(2) + '/' + data['ANO_ESTATISTICA'].astype(str)
+# Criar uma nova coluna de data completa para o formato YYYY-MM
+data['data_complete'] = pd.to_datetime(data['ANO_ESTATISTICA'].astype(str) + '-' + data['MES_ESTATISTICA'].astype(str).str.zfill(2))
+
+# Criar uma nova coluna para exibir no formato MM/YYYY
+data['MES_ANO'] = data['data_complete'].dt.strftime('%m/%Y')
 
 # Obter todos os tipos de crimes únicos na coluna NATUREZA_APURADA
 natureza_apurada_unique = sorted(data['NATUREZA_APURADA'].unique())
@@ -45,7 +48,7 @@ map_pane = pn.pane.HTML(sizing_mode='fixed', height=400, width=1200)
 stats_pane = pn.pane.HTML(sizing_mode='stretch_width')
 
 # Espaço para os gráficos de barras
-plot_pane = pn.pane.Plotly(sizing_mode='stretch_width', margin=(250, 0, 0, 0))  # Adiciona margem superior
+plot_pane = pn.pane.Plotly(sizing_mode='stretch_width', margin=(50, 0, 0, 0))  # Adiciona margem superior
 
 # Criar espaços adicionais para os gráficos dos top 10 bairros
 top_bairros_panes = [pn.pane.Plotly(sizing_mode='stretch_width') for _ in range(10)]
@@ -111,12 +114,12 @@ def generate_crime_map(event):
     """
 
     # Gerar gráfico de barras para MM/YYYY usando MES_ESTATISTICA e ANO_ESTATISTICA (Total)
-    mes_ano_counts = data_filtered['MES_ANO'].value_counts().sort_index()
+    mes_ano_counts = data_filtered.groupby('data_complete').size().reset_index(name='counts')
 
     fig_total = px.bar(
         mes_ano_counts, 
-        x=mes_ano_counts.index, 
-        y=mes_ano_counts.values, 
+        x=mes_ano_counts['data_complete'].dt.strftime('%m/%Y'), 
+        y=mes_ano_counts['counts'], 
         labels={'x': 'Mês/Ano', 'y': 'Quantidade'},
         title=f'Quantidade de {crime_type.value} por Mês/Ano em {ano.value}'
     )
@@ -130,12 +133,12 @@ def generate_crime_map(event):
     # Gerar gráficos de barras para os top 10 bairros
     for i, bairro in enumerate(top_bairros.index):
         bairro_data = data_filtered[data_filtered['BAIRRO'] == bairro]
-        mes_ano_bairro_counts = bairro_data['MES_ANO'].value_counts().sort_index()
+        mes_ano_bairro_counts = bairro_data.groupby('data_complete').size().reset_index(name='counts')
         
         fig_bairro = px.bar(
             mes_ano_bairro_counts, 
-            x=mes_ano_bairro_counts.index, 
-            y=mes_ano_bairro_counts.values, 
+            x=mes_ano_bairro_counts['data_complete'].dt.strftime('%m/%Y'), 
+            y=mes_ano_bairro_counts['counts'], 
             labels={'x': 'Mês/Ano', 'y': 'Quantidade'},
             title=f'Quantidade de {crime_type.value} por Mês/Ano em {bairro} ({ano.value})'
         )
