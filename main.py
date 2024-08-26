@@ -50,6 +50,12 @@ top_bairros_panes = [pn.pane.Plotly(sizing_mode='stretch_width') for _ in range(
 
 # Função para gerar o mapa de mancha criminal e os gráficos com base no tipo de crime e ano selecionado
 def generate_crime_map(event):
+    # Limpa os painéis antes de gerar novo conteúdo
+    map_pane.object = ""
+    plot_pane.object = ""
+    for pane in top_bairros_panes:
+        pane.object = ""
+
     if ano.value == 'TODOS':
         data_filtered = data[data['NATUREZA_APURADA'] == crime_type.value]
     else:
@@ -145,6 +151,9 @@ def generate_crime_map(event):
 # Conectar o botão à função
 generate_button.on_click(generate_crime_map)
 
+# Adicionar um espaço entre o mapa e os gráficos
+spacer = pn.Spacer(height=30)
+
 # Layout
 app = pn.Column(
     crime_type, 
@@ -152,8 +161,10 @@ app = pn.Column(
     generate_button, 
     stats_pane, 
     map_pane,
+    spacer,  # Adiciona o espaço entre o mapa e os gráficos
     plot_pane,  # Gráfico total
     *top_bairros_panes  # Gráficos por bairro
 )
 
+# Servir a aplicação
 app.servable()
