@@ -4,8 +4,8 @@ from folium.plugins import HeatMap
 import panel as pn
 import plotly.express as px
 
-# Ativar extensões do Panel
-pn.extension()
+# Ativar extensões do Panel, incluindo Plotly
+pn.extension('plotly')
 
 # Coordenadas para o centro de São José dos Campos - SP
 centro_sjc = [-23.2237, -45.9009]
