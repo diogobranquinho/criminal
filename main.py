@@ -45,17 +45,13 @@ map_pane = pn.pane.HTML(sizing_mode='fixed', height=400, width=1200)
 stats_pane = pn.pane.HTML(sizing_mode='stretch_width')
 
 # Espaço para os gráficos de barras
-plot_pane = pn.pane.Plotly(sizing_mode='stretch_width')
+plot_pane = pn.pane.Plotly(sizing_mode='stretch_width', margin=(250, 0, 0, 0))  # Adiciona margem superior
+
+# Criar espaços adicionais para os gráficos dos top 10 bairros
 top_bairros_panes = [pn.pane.Plotly(sizing_mode='stretch_width') for _ in range(10)]
 
 # Função para gerar o mapa de mancha criminal e os gráficos com base no tipo de crime e ano selecionado
 def generate_crime_map(event):
-    # Limpa os painéis antes de gerar novo conteúdo
-    map_pane.object = ""
-    plot_pane.object = ""
-    for pane in top_bairros_panes:
-        pane.object = ""
-
     if ano.value == 'TODOS':
         data_filtered = data[data['NATUREZA_APURADA'] == crime_type.value]
     else:
@@ -152,7 +148,7 @@ def generate_crime_map(event):
 generate_button.on_click(generate_crime_map)
 
 # Adicionar um espaço entre o mapa e os gráficos
-spacer = pn.Spacer(height=30)
+spacer = pn.Spacer(height=50)  # Aumenta o espaçamento entre o mapa e os gráficos
 
 # Layout
 app = pn.Column(
@@ -160,7 +156,7 @@ app = pn.Column(
     ano, 
     generate_button, 
     stats_pane, 
-    map_pane,
+    pn.Row(map_pane),  # Coloca o mapa dentro de uma linha para melhor layout
     spacer,  # Adiciona o espaço entre o mapa e os gráficos
     plot_pane,  # Gráfico total
     *top_bairros_panes  # Gráficos por bairro
