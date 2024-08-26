@@ -1,0 +1,4 @@
+folium==0.17.0
+pandas==2.2.2
+panel==1.4.5
+plotly==5.23.0
