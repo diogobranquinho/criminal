@@ -48,7 +48,7 @@ map_pane = pn.pane.HTML(sizing_mode='fixed', height=400, width=1200)
 stats_pane = pn.pane.HTML(sizing_mode='stretch_width')
 
 # Espaço para os gráficos de barras
-plot_pane = pn.pane.Plotly(sizing_mode='stretch_width', margin=(50, 0, 0, 0))  # Adiciona margem superior
+plot_pane = pn.pane.Plotly(sizing_mode='stretch_width', margin=(250, 0, 0, 0))  # Adiciona margem superior
 
 # Criar espaços adicionais para os gráficos dos top 10 bairros
 top_bairros_panes = [pn.pane.Plotly(sizing_mode='stretch_width') for _ in range(10)]
