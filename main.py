@@ -3,6 +3,7 @@ import folium
 from folium.plugins import HeatMap
 import panel as pn
 import plotly.express as px
+import unidecode  # Para remover acentos
 
 # Ativar extensões do Panel, incluindo Plotly
 pn.extension('plotly')
@@ -21,6 +22,16 @@ data_2024 = pd.read_csv(file_path_2024)
 
 # Concatenar os três DataFrames
 data = pd.concat([data_2022, data_2023, data_2024], ignore_index=True)
+
+# Função para uniformizar os textos na coluna NATUREZA_APURADA
+def uniformizar_texto(texto):
+    texto = unidecode.unidecode(texto)  # Remove acentos
+    texto = texto.replace('–', '-')  # Substitui hífen longo por hífen normal
+    texto = texto.strip().upper()  # Remove espaços em branco nas extremidades e converte para maiúsculas
+    return texto
+
+# Aplicar a função para uniformizar os textos na coluna NATUREZA_APURADA
+data['NATUREZA_APURADA'] = data['NATUREZA_APURADA'].apply(uniformizar_texto)
 
 # Criar uma nova coluna de data completa para o formato YYYY-MM
 data['data_complete'] = pd.to_datetime(data['ANO_ESTATISTICA'].astype(str) + '-' + data['MES_ESTATISTICA'].astype(str).str.zfill(2))
